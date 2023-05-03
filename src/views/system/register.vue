@@ -5,13 +5,13 @@
         width="410px"
         :show-close='false'
         class='login-dialog'
-         :modal-append-to-body='false'
+        :modal-append-to-body='false'
         :before-close="handleClose">
         <div>
           <div class='login-close' @click='handleClose'>
             <i class="el-icon-close"></i>
           </div>
-          <div class='no-register'>目前暂未开放用户注册</div>
+          <!-- <div class='no-register'>目前暂未开放用户注册</div> -->
           <img src='@/assets/logo.jpg' class='member-form-head'/>
           <div class='member-form-title'>
             <span class='login-word'>注册</span>
@@ -22,16 +22,26 @@
                 <el-form-item prop='userName'>
                   <el-input
                     v-model="formLabelAlign.userName"
-                    placeholder="请输入电子邮箱"
+                    placeholder="请输入用户名"
                   >
                   <template slot="prepend">
                     <i class="el-icon-user"></i>
                   </template>
                   </el-input>
                 </el-form-item>
-                <el-form-item class='login-password' prop='pass'>
+                <el-form-item prop='email'>
                   <el-input
-                    v-model="formLabelAlign.pass"
+                    v-model="formLabelAlign.email"
+                    placeholder="请输入电子邮箱"
+                  >
+                  <template slot="prepend">
+                    <i class="el-icon-message"></i>
+                  </template>
+                  </el-input>
+                </el-form-item>
+                <el-form-item class='login-password' prop='password'>
+                  <el-input
+                    v-model="formLabelAlign.password"
                     placeholder="请输入登录密码"
                     type="password"
                   >
@@ -74,7 +84,8 @@ export default {
        checked:false,
        rules:{
         userName:[{required: true, trigger: "blur",message:'请输入' }],
-        pass: [{required: true, trigger: "blur" ,message:'请输入'}],
+        email:[{required: true, trigger: "blur",message:'请输入' }],
+        password: [{required: true, trigger: "blur" ,message:'请输入'}],
         confirmPass:  [{required: true, trigger: "blur" ,message:'请输入'}]
        }
     }

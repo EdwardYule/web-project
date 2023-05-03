@@ -6,7 +6,7 @@
            <el-carousel indicator-position="outside" height="320px">
               <el-carousel-item v-for="item in 4" :key="item">
                 <div>
-                  <img src='@/assets/banner1.jpg'>
+                  <img src='@/assets/banner1.jpg' style="height: 320px;">
                   <div class='banner-left-p'>用户体验</div>
                 </div>
               </el-carousel-item>
@@ -217,6 +217,12 @@ export default {
         height: 153px;
         background: rgba(38,38,38,0.05);
         border-radius: 4px;
+        a{
+          height: 100%;
+          img{
+            height: 100% !important;
+          }
+        }
       }
       .sub-intro-foot,.banner-right{
         padding: 20px;
