@@ -161,4 +161,43 @@ export default {
     }
   }
 }
+@media screen and (max-width:1200px){
+  // 今日修改
+  .footer{
+    .footer-box{
+      width: 90%;
+    }
+  }
+}
+@media screen and (max-width:1024px){
+  .footer{
+    padding: 25px 10px;
+    .footer-right{
+      display: none;
+    }
+    .footer-left{
+      width: 100%;
+      div{
+        width: 100%;
+      }
+      .footer-left-logo{
+        display: none;
+      }
+      .footer-nav,.copyright{
+        text-align: center;
+      }
+    }
+  }
+}
+@media screen and (max-width:768px){
+  .footer{
+    padding: 20px 0;
+    .footer-nav{
+      display: none;
+    }
+    .copyright{
+      font-size: 12px;
+    }
+  }
+}
 </style>

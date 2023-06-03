@@ -1,42 +1,47 @@
 <template>
   <!-- 一篇文章样式 -->
-  <div class='list-box' @click='gotoDetail'>
-      <div class='item-img'>
+  <div class='list-box' @click="gotoPage('detail')">
+      <div v-if="isUpdate" @click.stop="gotoPage('contribute')" class="edit">
+        <el-button type="primary" size="mini">编辑</el-button>
+      </div>
+      <div v-if="itemData.article.articleThumbImg" class='item-img'>
         <div class='item-img-inner' >
-          <div class='item-category'>科学</div>
-           <img src='@/assets/intro.jpg' />
+          <div class='item-category'>{{itemData.articleType.articleTypeName}}</div>
+           <img :src='itemData.article.articleThumbImg' />
         </div> 
       </div>
       <div class='item-content'>
-        <div class='item-title'>三扽三扽森扽三扽森扽三扽森扽三扽森扽三扽森扽三扽森扽三扽森扽三扽森扽三扽森扽三扽森扽三扽森扽三扽森扽三扽森扽三扽森扽三扽森扽三扽森扽森扽</div>
-        <div class='item-excerpt'>三扽森扽</div>
+        <div class='item-title'>{{itemData.article.articleTitle}}</div>
+        <div class='item-excerpt'>{{itemData.article.articleDesc}}</div>
         <div class='item-meta'>
           <div class='item-meta-left'>
             <span class='item-meta-avatar'>
-              <img src='@/assets/icon.jpg' />
-              <span>娱乐了</span>
+              <img v-if="!itemData.userInfo.avatarUrl" src="@/assets/icon.jpg" class='userImg'/>
+              <img v-else :src="itemData.userInfo.avatarUrl" class='userImg'/>
+              <span>{{itemData.userInfo.userName}}</span>
             </span>
-            <div class='item-meta-date'>2天前</div>
+            <div class='item-meta-date'>{{$utils.getDateDiff(itemData.article.createTime)}}</div>
           </div>
           <div class='item-meta-right'>
               <span>
                 <i class="iconfont icon-eyes"></i>
-                10
+                {{itemData.article.viewCount}}
               </span>
               <span>
                 <i class="iconfont icon-comments"></i>
-                10
+                {{itemData.article.commentCount}}
               </span>
               <span>
-                <i class="iconfont icon-star"></i>
-                10
+                <i v-if="itemData.article.collectStatus" class="iconfont icon-star1" style="font-size:14px;"></i>
+                <i v-else class="iconfont icon-star2"></i>
+                {{itemData.article.collectCount}}
               </span>
               <span>
-                <i class="iconfont icon-dianzan"></i>
-                10
+                <i v-if="itemData.article.thumbUpStatus" class="iconfont icon-dianzan_kuai"></i>
+                <i v-else class="iconfont icon-dianzan"></i>
+                {{itemData.article.thumbUpCount}}
               </span>
             </div>
-          
         </div>
       </div>
   </div>
@@ -44,9 +49,25 @@
 
 <script>
 export default {
+  props: {
+    // 传进来的是单个的列表数据
+    itemData:{
+      type:Object,
+      default:()=>{}
+    },
+    // 是否可编辑
+    isUpdate:{
+      type:Boolean,
+      default:false
+    }
+  },
+  mounted(){
+    
+  },
   methods:{
-    gotoDetail(){
-      this.$router.push({name:'detail'})
+    // 跳转
+    gotoPage(name){
+      this.$router.push({name,query: {id:this.itemData.article.articleId}})
     }
   }
 }
@@ -57,14 +78,17 @@ export default {
 @theme-light-color:rgba(38,38,38,0.6);
 .list-box{
   display: flex;
-  padding: 20px 0;
+  padding: 20px;
   border-bottom: 1px solid #f5f5f5;
   overflow: hidden;
   cursor: pointer;
+  position: relative;
+  .edit{
+    display: none;
+  }
   .item-content{
     position: relative;
     width: 70%;
-    padding-left: 20px;
     flex:1;
     .item-title{
       margin: 0 0 10px;
@@ -133,7 +157,6 @@ export default {
     width: 30%;
     max-width: 250px;
     overflow: hidden;
-    border-radius: 4px;
     -ms-flex-negative: 0;
     flex-shrink: 0;
     -webkit-box-flex: 0;
@@ -145,10 +168,12 @@ export default {
       top: 0;
       width: 100%;
       height: 100%;
+      padding-right: 20px;
       img{
         width: 100%;
         height: 100%;
         object-fit: cover;
+        border-radius: 4px;
       }
       .item-category{
           position: absolute;
@@ -179,6 +204,57 @@ export default {
   .item-img:hover img{
     transform: scale(1.03);
     transition: all .3s ease-out 0s;
+  }
+}
+.list-box:hover{
+  background-color: #f5f5f5;
+  transition: all .5s;
+  .edit{
+    display: block;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1;
+  }
+}
+@media screen and (max-width:768px){
+  .list-box {
+        padding: 10px;
+      .item-img{
+        width: 35%;
+        .item-img-inner .item-category{
+          left:5px;
+          top:5px;
+          padding: 3px 5px;
+        }
+      }
+  .item-content {
+    width: 65%;
+    .item-title{
+      font-size: 15px;
+    }
+    .item-excerpt{
+      margin-bottom: 20px;
+      font-size: 14px;
+      height: 40px;
+    }
+    .item-meta {
+      width: 100%;
+      .item-meta-left{
+        .item-meta-avatar{
+            display: none;
+        }
+      }
+      .item-meta-right {
+        text-align: right;
+      }
+      .item-meta-right span:nth-child(1),
+      .item-meta-right span:nth-child(2),
+      .item-meta-right span:nth-child(3){
+          display: none;
+      }
+    } 
+  }
   }
 }
 </style>

@@ -1,13 +1,13 @@
 <template>
   <div class='home'>
     <div class='wrap'>
-      <div class='wrap-banner'>
+      <div class='wrap-banner' v-loading="loading1">
         <div class='banner-left'>
-           <el-carousel indicator-position="outside" height="320px">
-              <el-carousel-item v-for="item in 4" :key="item">
-                <div>
-                  <img src='@/assets/banner1.jpg' style="height: 320px;">
-                  <div class='banner-left-p'>用户体验</div>
+           <el-carousel indicator-position="outside">
+              <el-carousel-item v-for="item in bannerList" :key="item.articleId">
+                <div class='banner-wrap' @click="gotoPage(item.articleId)">
+                  <img :src='item.articleThumbImg'/>
+                  <div class='banner-left-p'>{{item.articleTitle}}</div>
                 </div>
               </el-carousel-item>
             </el-carousel>
@@ -32,30 +32,32 @@
         <div class='sub-intro'>
           <div class='sub-intro-head'>
             <span class='sub-intro-title'>专题介绍 </span>
-            <span class='sub-intro-small'>专题模块标题旁边的描述文字 </span>
             <a class='sub-intro-all' href='#'>全部专题 </a>
           </div>
           <div class='sub-intro-foot'>
-            <div v-for='i in 4' :key='i' class='sub-foot-item sub_wid4'>
+            <div v-for='(item,index) in selectTitle' :key='index' class='sub-foot-item sub_wid4'>
               <a>
-                <img src='@/assets/intro.jpg'/>
-                <p>用户体验</p>
+                <img :src='item.articleTypeImg'/>
+                <p>{{item.articleTypeName}}</p>
               </a>
             </div>
           </div>
         </div>
         <!-- 专题end -->
 
-        <div class='main-list'>
-          <el-tabs v-model="activeName">
-            <el-tab-pane label="最新文章" name="1">
-              <listItem v-for='item in 4' :key='item' ></listItem>
+        <div class='main-list' v-loading="loading2">
+          <el-tabs v-model="activeName"  @tab-click='tabArticle'>
+            <el-tab-pane v-for='(item,index) in selectType' 
+                :key='item.articleTypeId'
+                :label="item.articleTypeName" :name="`tab${index}`">
+                <div v-if="listBox.length">
+                  <listItem v-for='(item,index) in listBox' :key='index' :itemData='item'></listItem>
+                  <div class='load-more-wrap'>已经到底啦</div>
+                </div>
+                <NoData v-else></NoData>
+
             </el-tab-pane>
-            <el-tab-pane label="科学" name="2">科学</el-tab-pane>
-            <el-tab-pane label="人文" name="3">人文</el-tab-pane>
-            <el-tab-pane label="生活" name="4">定时任务补偿</el-tab-pane>
-            <el-tab-pane label="综合" name="5">定时任务补偿</el-tab-pane>
-          </el-tabs> 
+          </el-tabs>
         </div>
     </div>
   </div>
@@ -63,17 +65,111 @@
 
 <script>
 import listItem from '@/components/listItem/list.vue'
+import NoData from '@/components/empty/nodata'
 export default {
   components:{
-    listItem
+    listItem,
+    NoData
   },
   data(){
     return {
-      activeName: '1'
+      activeName: 'tab0',
+      bannerList: [],
+      selectType: [{
+        articleTypeId:'0',
+        articleTypeName: '最新文章',
+      }],
+      selectTitle: [],
+
+      listQuery: {
+        page: 1,
+        pageSize: 10,
+      },
+      flag:true,
+      loading1: false,
+      loading2: false,
+      totalPage: 0,
+      listBox: [],
+
+      params:{
+        articleTypeId:0
+      }
     }
   },
+  created() {
+    this.getBanner()
+    this.init(true)
+  },
+  watch:{
+    '$store.state.selectType':{
+      immediate:true,
+      handler:function(val){
+        if(val.length<=0||!val) return
+        this.selectType =[
+            ...this.selectType,
+            ...val
+            ]
+        this.selectTitle = val
+      }
+    }
+  },
+  mounted(){
+    console.log(this.$router)
+    window.addEventListener('scroll', this.onScroll) // 监听页面滚动
+  },
+  beforeDestroy () {
+     window.removeEventListener('scroll', this.onScroll)
+  },
   methods:{
-  
+     onScroll() {
+      this.loadMore()
+    },
+    loadMore() {
+      const clientHei = document.documentElement.clientHeight || document.body.clientHeight
+      const scrollTop = document.documentElement.scrollTop || document.body.scrollTop
+      const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight
+
+      if (parseInt(scrollHeight - clientHei  - scrollTop) <= 500 && this.flag && this.listQuery.page<this.totalPage) {
+       this.flag = false
+       setTimeout(() => {
+          this.listQuery.page++
+          this.init();
+        }, 200);
+      }
+    },
+    async getBanner() {
+      this.loading1 = true
+      let res = await this.$api.home.getBanner()
+      this.bannerList = res.object.banners
+      this.loading1 = false
+    },
+    async init(type){
+      this.loading2 = true
+      const obj = {
+        ...this.params,
+        ...this.listQuery
+      }
+      let res = await this.$api.article.getArticleList(obj)
+      const {result,pages} = res.object
+      this.flag = true
+      const arr = result||[]
+      this.totalPage = pages
+      if(type) {
+        this.listBox = []
+      }
+      this.listBox = [...this.listBox, ...arr]
+      this.loading2 = false
+    },
+    tabArticle(e){
+      this.listQuery.page = 1
+      let current = this.selectType[e.index].articleTypeId*1
+      this.params.articleTypeId = current
+      this.init(true)
+    },
+     // 跳转
+    gotoPage(val){
+      this.$router.push({name:'detail',query: {id:val}})
+    }
   }
 }
 </script>
@@ -87,6 +183,10 @@ export default {
     width: 80%;
     margin: 0 auto;
     padding: 20px 0;
+    .banner-wrap{
+      height: 320px;
+      cursor: pointer;
+    }
     .wrap-banner{
       width: 100%;
       display: flex;
@@ -95,8 +195,12 @@ export default {
         width: 100%;
         height: 320px;
         overflow: hidden;
+        background: #fff;
         /deep/.el-carousel__item:hover img{
           transform: scale(1.02);
+        }
+        /deep/.el-carousel__container{
+          height: 320px;
         }
         .banner-left-p{
             position: absolute;
@@ -114,6 +218,8 @@ export default {
         img{
           width: 100%;
           transition: all .3s ease-out 0s;
+          object-fit: cover;
+          height: 100%;
         }
         /deep/.el-carousel__indicators--outside{
           position: absolute;
@@ -162,9 +268,9 @@ export default {
     .main-list{
       margin-bottom: 20px;
        background: #fff;
-       padding: 0 20px;
         /deep/ .el-tabs__header{
           margin: 0;
+          padding: 0 20px;
        }
        /deep/ .el-tabs__nav-scroll{
         height: 60px;
@@ -208,21 +314,15 @@ export default {
         }
       }
       .sub_wid4{
-         flex: 25%;
+         width: 25%;
         margin-right:15px;
       }
     }
       .sub_wid1{
         width: 100%;
         height: 153px;
-        background: rgba(38,38,38,0.05);
+        background: #fff;
         border-radius: 4px;
-        a{
-          height: 100%;
-          img{
-            height: 100% !important;
-          }
-        }
       }
       .sub-intro-foot,.banner-right{
         padding: 20px;
@@ -233,13 +333,15 @@ export default {
             position: relative;
             display: block;
             width: 100%;
+            height: 100%;
             text-decoration: none;
             border-radius: 4px;
             overflow: hidden;
           }
           img{
             width: 100%;
-            height: auto;
+            height: 100%;
+            object-fit: cover;
             vertical-align: top;
           }
           p{
@@ -261,6 +363,118 @@ export default {
           margin-right:0;
         }
       }
+  }
+}
+.load-more-wrap{
+  text-align: center;
+    font-size: 13px;
+    color: rgba(38, 38, 38, 0.8);
+    position: relative;
+    padding: 20px;
+}
+.load-more-wrap::before {
+    position: absolute;
+    top: 50%;
+    left: calc(50% - 60px);
+    width: 16px;
+    height: 1px;
+    content: "";
+    background: rgba(38, 38, 38, 0.7);
+}
+.load-more-wrap::after {
+    position: absolute;
+    top: 50%;
+    right: calc(50% - 60px);
+    width: 16px;
+    height: 1px;
+    content: "";
+    background: rgba(38, 38, 38, 0.7);
+}
+@media screen and (max-width:1200px){
+  // 今日修改
+  .home .wrap {
+    width:90%;
+  }
+}
+@media screen and (max-width:1024px){
+  .home .wrap {
+     .wrap-banner{
+      flex-direction: column;
+      .banner-left{
+        width: 100%;
+        height: auto;
+      }
+      .banner-right{
+        width: 100%;
+        margin-top: 20px;
+        margin-left: 0;
+        flex-direction: row;
+      }
+      .sub_wid1{
+        width: calc(50% - 5px);
+        height: auto;
+      }
+    }
+  }
+}
+@media screen and (max-width:768px){
+  .home .wrap{
+    width: 100%;
+    padding: 0;
+     .main-list {
+      /deep/.el-tabs__header{
+        padding: 0 10px;
+        font-size: 16px;
+        .el-tabs__nav-next, .el-tabs__nav-prev{
+          line-height: 60px;
+        }
+      }
+      /deep/.el-tabs__item{
+            font-size: 14px;
+            padding:0 10px;
+      }
+      /deep/.el-tabs--top .el-tabs__item.is-top:nth-child(2){
+        padding-left: 0;
+      }
+      /deep/.el-tabs__nav-scroll{
+        height: 50px;
+      }
+     }
+    .wrap-banner .banner-right{
+      padding:0 10px;
+      .banner-right-p{
+        font-size: 14px;
+      }
+    }
+    .sub-intro-foot{
+      flex-wrap: wrap;
+      justify-content: space-between;
+      .sub-foot-item p{
+        font-size: 14px;
+      }
+    }
+    .sub-intro {
+      padding:0 10px;
+      .sub-intro-head{
+        padding: 10px 0;
+      }
+       .sub-intro-head .sub-intro-title{
+        font-size: 16px;
+      }
+    .sub-intro-head .sub-intro-small{
+      display: none;
+    }
+      .sub-intro-foot{
+        padding: 0;
+      }
+      .sub_wid4{
+        width:calc(50% - 5px);
+        margin: 0;
+      }
+      .sub_wid4:nth-child(1),.sub_wid4:nth-child(2){
+        margin-bottom: 10px;
+      }
+    }
   }
 }
 </style>
