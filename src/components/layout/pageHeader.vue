@@ -22,7 +22,7 @@
                  
                   </el-menu-item>
             </el-submenu>
-            <el-menu-item index="/product">产品知识</el-menu-item>
+            <!-- <el-menu-item index="/product">产品知识</el-menu-item> -->
             <el-menu-item index="/aboutUs">关于我们</el-menu-item>
             <el-menu-item index="/contactUs">联系我们</el-menu-item>
           </el-menu>

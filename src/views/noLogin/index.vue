@@ -13,16 +13,16 @@
       <div class='noLogin-foot'>
                <ul class='footer-nav'>
                 <li @click="gotoRouter('knowledge')">知识分类</li>
-                <li @click="gotoRouter('product')">产品知识</li>
+                <!-- <li @click="gotoRouter('product')">产品知识</li> -->
                 <li @click="gotoRouter('aboutUs')">关于我们</li>
                 <li @click="gotoRouter('contactUs')">联系我们</li>
               </ul>
 
               <div class='copyright'>
-                Copyright © 2018 WPCOM 版权所有 
+                Copyright © 2023 版权所有 
                 <a herf='#'>粤ICP备000000000号</a>
                 Powered by 
-                <a href='#'>WordPress</a>
+                <a href='#'>鱼乐月下</a>
               </div>
       </div>
   </div>

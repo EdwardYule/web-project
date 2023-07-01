@@ -12,24 +12,24 @@
               </el-carousel-item>
             </el-carousel>
         </div>
-        <div  class='banner-right'>
+        <!-- <div  class='banner-right'>
             <div class='sub-foot-item sub_wid1'>
               <a>
                 <img src='@/assets/intro.jpg'/>
-                <p class='banner-right-p'>用户体验</p>
+                <p class='banner-right-p'>关于我们</p>
               </a>
             </div>
             <div class='sub-foot-item sub_wid1'>
               <a>
                 <img src='@/assets/intro.jpg'/>
-                <p class='banner-right-p'>用户体验</p>
+                <p class='banner-right-p'>联系我们</p>
               </a>
             </div>
-        </div>
+        </div> -->
       </div>
 
         <!-- 专题start -->
-        <div class='sub-intro'>
+        <!-- <div class='sub-intro'>
           <div class='sub-intro-head'>
             <span class='sub-intro-title'>专题介绍 </span>
             <a class='sub-intro-all' href='#'>全部专题 </a>
@@ -42,7 +42,7 @@
               </a>
             </div>
           </div>
-        </div>
+        </div> -->
         <!-- 专题end -->
 
         <div class='main-list' v-loading="loading2">
@@ -140,7 +140,10 @@ export default {
     async getBanner() {
       this.loading1 = true
       let res = await this.$api.home.getBanner()
-      this.bannerList = res.object.banners
+      this.bannerList = res.object.banners || [
+        {articleThumbImg: require('@/assets/banner1.jpg')},
+        {articleThumbImg: require('@/assets/banner2.jpg')},
+      ]
       this.loading1 = false
     },
     async init(type){

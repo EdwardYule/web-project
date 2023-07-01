@@ -2,7 +2,7 @@
     <div class='footer'>
       <div class='footer-box'>
         <div class='footer-left'>
-          <img src='@/assets/logo-footer.png' class='footer-left-logo'/>
+          <img src='@/assets/logo.jpg' class='footer-left-logo'/>
           <div>
                <ul class='footer-nav'>
                 <li>
@@ -11,21 +11,21 @@
                 <li>
                   知识分类
                 </li>
-                <li>分类产品</li>
+                <!-- <li>分类产品</li> -->
                 <li>关于我们</li>
                 <li>联系我们</li>
               </ul>
 
               <div class='copyright'>
-                Copyright © 2018 WPCOM 版权所有 
+                Copyright © 2023 版权所有 
                 <a herf='#'>粤ICP备000000000号</a>
                 Powered by 
-                <a href='#'>WordPress</a>
+                <a href='#'>鱼乐月下</a>
               </div>
           </div>
         </div>
                 
-        <div class='footer-right'>
+        <!-- <div class='footer-right'>
           <div>
             <i class="iconfont icon-iphone"></i>
           </div>
@@ -38,7 +38,7 @@
            <div>
             <i class="iconfont icon-weibo"></i>
           </div>
-        </div>
+        </div> -->
 
       </div>
     </div>
