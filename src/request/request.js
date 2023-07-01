@@ -4,7 +4,7 @@ import { Message } from "element-ui";
 
 console.log(process.env)
 const instance = axios.create({
-    baseURL: 'https://test.yulyx.com/api/',
+    baseURL: 'http://43.156.83.96:8080/',
     timeout: 60000
 })
 
